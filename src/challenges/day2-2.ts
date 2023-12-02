@@ -9,7 +9,7 @@ type cubeType = {
   n:number
 }
 
-type colorType = "blue" | "red" | "green"
+type colorType = "red" | "green" | "blue"
 const RED:colorType = "red"
 const GREEN:colorType = "green"
 const BLUE:colorType = "blue"
@@ -30,15 +30,11 @@ const games = value.split("\n").map(row=>{
   const sets = value.split(";").map(set=>set.split(", ").map(cube=>{
     const result:cubeType = {color:RED,n:0}
 
-    if(cube.includes(BLUE)){
-      result.color = BLUE
-      result.n = Number(cube.replace(BLUE,""))
-    }else if(cube.includes(RED)){
-      result.color = RED
-      result.n = Number(cube.replace(RED,""))
-    }else if(cube.includes(GREEN)){
-      result.color = GREEN
-      result.n = Number(cube.replace(GREEN,""))
+    for (const color of colors) {
+      if(cube.includes(color)){
+        result.color=color
+        result.n = Number(cube.replace(color,""))
+      }
     }
 
     return result
@@ -53,46 +49,25 @@ const games = value.split("\n").map(row=>{
 })
 
 
-const resultGames = games.map(({sets,n})=>{
+const resultGames = games.map(({sets})=>{
 
-  let minRed = 0
-  let minBlue = 0
-  let minGreen = 0
+  const mins = sets.map(set=>
+    set.reduce((acc,{color,n})=>{
+      const j = colors.indexOf(color)
+      const result = [...acc]
+      result[j] += n
+      return result
+    },[0,0,0])
+  ).reduce((acc, [r,g,b]) => ({
+    r: Math.max(acc.r, r),
+    g: Math.max(acc.g, g),
+    b: Math.max(acc.b, b),
+  }), {r:0, g:0, b:0})
 
-  for (const set of sets) {
-    let green = 0
-    let red = 0
-    let blue = 0
-  
-    for (const {color,n} of set) {
-      if(color === RED){
-        red += n
-      }else if (color === GREEN) {
-        green +=n
-      }else if(color === BLUE){
-        blue +=n
-      }
-    }
+  const power = mins.r * mins.g * mins.b
 
-    if(minRed < red){
-      minRed = red
-    }
-    if(minGreen < green){
-      minGreen = green
-    }
-    if(minBlue < blue){
-      minBlue = blue
-    }
-  
-  }
-
-  const power = minRed * minGreen * minBlue
-
-
-  return {minRed,minGreen,minBlue, power}
+  return {...mins, power}
 })
-
-
 
 console.log(resultGames)
 
