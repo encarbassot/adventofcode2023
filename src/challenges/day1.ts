@@ -10,7 +10,7 @@ xtwone3four
 zoneight234
 7pqrstsixteen`
 
-const value = input // text
+const value = text
 
 
 const rows = value.split("\n").map(x=>{
