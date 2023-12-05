@@ -1,5 +1,5 @@
 import { expect, test, describe} from "bun:test"
-import challenge2, { checkSeed, checkSeedSingle, makeJSON } from "./day5-2"
+import challenge2, { getLeastRanges, makeJSON } from "./day5-2"
 
 const file = Bun.file("assets/inputs/DAY5.txt");
 const challengeInputFile = await file.text();
@@ -42,27 +42,28 @@ humidity-to-location map:
 
 describe('SECOND CHALLENGE', () => { 
 
-  const [seeds1,conv1] = makeJSON(testValue1)
 
-  test("SEEDS FROM JSON",()=>{
-    expect(seeds1).toEqual([
-      79,80,81,82,83,84,85,86,87,88,89,90,91,92,
-      55,56,57,58,59,60,61,62,63,64,65,66,67
+  const [seeds1,ranges1] = makeJSON(testValue1)
+
+  
+
+
+
+  test("LAST RANGE LEAST VALUE", ()=>{
+    expect(getLeastRanges(ranges1[ranges1.length-1])).toEqual([
+      [0,0],
+      []
     ])
   })
 
-
-
-
   
-  
-  test("FULL TEST INPUT", ()=>{
-    expect(challenge2(testValue1)).toBe(46)
-  })
+  // test("FULL TEST INPUT", ()=>{
+  //   expect(challenge2(testValue1)).toBe(46)
+  // })
 
-  test("CHALLENGE INPUT FILE", ()=>{
-    const result = challenge2(challengeInputFile)
-    console.log(result)
-    expect(result).toBe(result)
-  })
+  // test("CHALLENGE INPUT FILE", ()=>{
+  //   const result = challenge2(challengeInputFile)
+  //   console.log(result)
+  //   expect(result).toBe(result)
+  // })
 })

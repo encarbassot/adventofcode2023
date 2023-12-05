@@ -1,59 +1,66 @@
 
 type seedType = number
-type conversionType = {from:string,to:string,conversions:number[][]}
-
-
-
+type conversionType = {from:string,to:string,ranges:RangeConversion[]}
 
 
 
 export default function(value:string){
 
-  const [seeds,conversions] = makeJSON(value)
+  const [seeds,conversions]=makeJSON(value)
+  console.log(seeds,conversions)
+}
 
-  // console.log(seeds,conversions)
-  let minLocation = Infinity
 
-  for (const s of seeds) {
-    const location = checkSeed(s,conversions)
-    if(location<minLocation){
-      minLocation = location
-    }
+
+export function getLeastRanges(conversion:conversionType){
+  const {from,to,ranges} =  conversion
+
+  for (const range of ranges) {
+    console.log(""+range)
   }
 
-  return minLocation
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 export function makeJSON(value:string):[seedType[],conversionType[]]{
-  const [__seeds,...conversions] = value.split("\n\n")
+  const [_seeds,...conversionRanges] = value.split("\n\n")
 
-  var [_,_seeds] = __seeds.split("seeds: ")
-  var seedsList = _seeds.split(" ").map(Number)
+  var [_,seeds] = _seeds.split("seeds: ")
+  var seedsList = seeds.split(" ").map(Number)
   
-  const seeds:number[] = []
-  for(let i=0;i<seedsList.length;i+=2){
-    const range = seedsList[i]
-    const len = seedsList[i+1]
-    for(let j=0;j<len;j++){
-      seeds.push(range+j)
-    }
-  }
-
-  const conversionsList = conversions.map(x=>{
+  
+  const rangesList:conversionType[] = conversionRanges.map(x=>{
     const [title,convs]=x.split(" map:\n")
     const [from,to] = title.split("-to-")
     return {
       from,
       to,
-      conversions:convs.split("\n").map(y=>y.split(" ").map(Number))
+      ranges:convs.split("\n").map(y=>{
+        const [dest,orig,len] = y.split(" ").map(Number)
+        return new RangeConversion(dest,orig,len)
+      })
     }
   })
   
 
-  return [seeds,conversionsList]
+  return [seedsList,rangesList]
 }
 
 
@@ -62,28 +69,70 @@ export function makeJSON(value:string):[seedType[],conversionType[]]{
 
 
 
-export function checkSeed(seed:seedType,conversions:conversionType[]){
 
-  // console.log(seed)
-  let result = seed
-  for (const conv of conversions) {
-    result = checkSeedSingle(result,conv)
-    // console.log(result)
+
+
+class RangeConversion{
+  diff:number;
+  rangeOrig:Range;
+  rangeDest:Range;
+
+  constructor(private dest:number,private orig:number,public len:number){
+    this.rangeOrig = new Range(orig,orig+len)
+    this.rangeDest = new Range(dest,dest+len)
+    this.diff = dest - orig
+  }
+  
+  get destStart(){return this.dest}
+  get destEnd(){return this.dest + this.len} // included
+  get origStart(){return this.orig}
+  get origEnd(){return this.orig + this.len} // included
+
+  isInDest(n:number):boolean{
+    return this.rangeDest.isIn(n)
   }
 
-  return result
+  isInOrig(n:number):boolean{
+    return this.rangeOrig.isIn(n)
+  }
+
+  //gets the number from orig an returns the number from dest
+  //orig to dest
+  in(n:number):number | undefined{
+    if(!this.isInOrig(n)) return undefined
+    return n + this.diff
+  }
+
+  //gets the number from dest an returns the number from orig
+  //dest to orig
+  out(n:number):number | undefined{
+    if(!this.isInDest(n)) return undefined
+    return n - this.diff
+  }
+
+  toString(){
+    return `${this.rangeOrig}~${this.rangeDest}`
+  }
+  
 }
 
 
-export function checkSeedSingle(seed:seedType,{conversions}:conversionType){
 
-  for (const [destinationRange,sourceRange,rangeLength] of conversions) {
-    if(seed>=sourceRange && seed <= sourceRange+rangeLength){
-      const dif = destinationRange - sourceRange
-      return seed + dif
-    }
-    
+class Range{
+  //end is included in the range
+  constructor(public start:number,public end:number){  }
+
+  isIn(n:number){
+    return n>= this.start && n <= this.end
   }
 
-  return seed
+  //returns offset
+  off(n:number):number{
+    return n - this.start
+  }
+
+  toString(){
+    return `[${this.start}...${this.end}]`
+  }
+
 }
