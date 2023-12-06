@@ -86,9 +86,9 @@ describe('FIRST CHALLENGE', () => {
     expect(challenge1(testValue1)).toBe(35)
   })
 
-  // test("CHALLENGE INPUT FILE", ()=>{
-  //   const result = challenge1(challengeInputFile)
-  //   console.log(result)
-  //   expect(result).toBe(result)
-  // })
+  test("CHALLENGE INPUT FILE", ()=>{
+    const result = challenge1(challengeInputFile)
+    console.log(result)
+    expect(result).toBe(result)
+  })
 })
