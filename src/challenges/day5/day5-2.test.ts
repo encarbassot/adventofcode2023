@@ -1,5 +1,5 @@
 import { expect, test, describe} from "bun:test"
-import challenge2, { getLeastRanges, makeJSON } from "./day5-2"
+import challenge2, { Range, getLeastRanges, makeJSON } from "./day5-2"
 
 const file = Bun.file("assets/inputs/DAY5.txt");
 const challengeInputFile = await file.text();
@@ -46,11 +46,18 @@ describe('SECOND CHALLENGE', () => {
   const [seeds1,ranges1] = makeJSON(testValue1)
 
   
+  test("SEEDS",()=>{
+    expect(seeds1).toEqual([
+      new Range(79,79+14),
+      new Range(55,55+13)
+    ])
+  })
 
 
 
-  test("LAST RANGE LEAST VALUE", ()=>{
-    expect(getLeastRanges(ranges1[ranges1.length-1])).toEqual([
+  test("LAST RANGES", ()=>{
+    console.log(ranges1[ranges1.length-1])
+    expect(ranges1[ranges1.length-1]).toEqual([
       [0,0],
       []
     ])

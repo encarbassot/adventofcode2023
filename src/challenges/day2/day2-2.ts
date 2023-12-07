@@ -2,7 +2,7 @@ const path = "assets/inputs/DAY2.txt"
 const file = Bun.file(path);
 const text = await file.text();
 
-import {} from "../utils/objectGroupBy"
+import {} from "../../utils/objectGroupBy"
 
 type cubeType = {
   color:colorType

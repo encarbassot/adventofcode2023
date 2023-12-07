@@ -12,14 +12,6 @@ export default function(value:string){
 
 
 
-export function getLeastRanges(conversion:conversionType){
-  const {from,to,ranges} =  conversion
-
-  for (const range of ranges) {
-    console.log(""+range)
-  }
-
-}
 
 
 
@@ -36,15 +28,18 @@ export function getLeastRanges(conversion:conversionType){
 
 
 
-
-
-
-export function makeJSON(value:string):[seedType[],conversionType[]]{
+export function makeJSON(value:string):[Range[],conversionType[]]{
   const [_seeds,...conversionRanges] = value.split("\n\n")
 
   var [_,seeds] = _seeds.split("seeds: ")
   var seedsList = seeds.split(" ").map(Number)
   
+  const seedsRanges:Range[] = []
+  for(let i=0;i<seedsList.length;i+=2){
+    const start = seedsList[i]
+    const len = seedsList[i+1]
+    seedsRanges.push(new Range(start,start + len))
+  }
   
   const rangesList:conversionType[] = conversionRanges.map(x=>{
     const [title,convs]=x.split(" map:\n")
@@ -60,7 +55,7 @@ export function makeJSON(value:string):[seedType[],conversionType[]]{
   })
   
 
-  return [seedsList,rangesList]
+  return [seedsRanges,rangesList]
 }
 
 
@@ -72,7 +67,7 @@ export function makeJSON(value:string):[seedType[],conversionType[]]{
 
 
 
-class RangeConversion{
+export class RangeConversion{
   diff:number;
   rangeOrig:Range;
   rangeDest:Range;
@@ -111,14 +106,14 @@ class RangeConversion{
   }
 
   toString(){
-    return `${this.rangeOrig}~${this.rangeDest}`
+    return `${this.rangeOrig}»${this.rangeDest}`
   }
   
 }
 
 
 
-class Range{
+export class Range{
   //end is included in the range
   constructor(public start:number,public end:number){  }
 
